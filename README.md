@@ -19,38 +19,38 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 
 ## 🖥️ Visual Dashboard Walkthrough (Live UI Screenshots)
 
-### 1. Growth Overview Dashboard
+### 1. Growth & Overview Dashboard
 > *Real-time visibility into the ₹2,37,000 Recoverable GMV Pipeline, three financial tiers, and root cause error distribution.*
 
-![Growth Overview](docs/screenshots/01_growth_overview.png)
+![Growth and Overview](docs/screenshots/01_growth_overview.png)
 
 ---
 
-### 2. Revenue Leaks & Opportunity Detection
+### 2. Revenue Leaks & Opportunities
 > *Deterministic anomaly grouping across High-Value Failures (₹1,12,000), Abandoned Orders (₹64,000), and Repeat Customer Friction (₹61,000) — summing to exactly 100% of Revenue at Risk.*
 
-![Revenue Leaks](docs/screenshots/02_revenue_leaks.png)
+![Revenue Leaks and Opportunities](docs/screenshots/02_revenue_leaks.png)
 
 ---
 
-### 3. Agentic Grounded Telemetry Investigation
-> *7-element reasoning breakdown (Evidence, Known Facts, Inference, Unknowns, Confidence, Action, ROI) without hallucinating unobserved root causes.*
+### 3. Agentic Investigation
+> *7-element grounded reasoning breakdown (Evidence, Known Facts, Inference, Unknowns, Confidence, Action, ROI) without hallucinating unobserved root causes.*
 
 ![Agentic Investigation](docs/screenshots/03_agentic_investigation.png)
 
 ---
 
-### 4. Merchant Approval Center & Safety Pre-Flight Checklist
-> *Human-in-the-loop authorization gate enforcing the 4-point deterministic safety verification checklist before Razorpay API dispatch.*
+### 4. Approval & Commerce Dispatch
+> *Human-in-the-loop authorization gate enforcing the deterministic safety verification checklist before Razorpay API dispatch.*
 
-![Approval Center](docs/screenshots/04_approval_center.png)
+![Approval and Commerce Dispatch](docs/screenshots/04_approval_center.png)
 
 ---
 
-### 5. Cryptographic Audit Ledger & Security Simulations
+### 5. Audit & Resilience
 > *Tamper-evident SHA-256 hash-chain timeline with live cryptographic chain verification and 3 interactive failure scenarios.*
 
-![Audit & Resilience](docs/screenshots/05_audit_resilience.png)
+![Audit and Resilience](docs/screenshots/05_audit_resilience.png)
 
 ---
 
