@@ -5,10 +5,16 @@ let currentInvestigation = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
-    loadOverview();
-    loadLeaks();
-    loadApprovals();
-    loadAuditEvents();
+    const hash = window.location.hash.replace('#', '');
+    if (['overview', 'leaks', 'investigate', 'approval', 'audit'].includes(hash)) {
+        switchTab(hash);
+        if (hash === 'investigate') investigateSpecificLeak('leak_hv_failures');
+    } else {
+        loadOverview();
+        loadLeaks();
+        loadApprovals();
+        loadAuditEvents();
+    }
 });
 
 // ----------------- Tab Navigation -----------------
