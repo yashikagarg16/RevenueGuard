@@ -1,4 +1,5 @@
 import os
+import tempfile
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
@@ -27,8 +28,8 @@ class Settings(BaseSettings):
     REQUIRE_MERCHANT_APPROVAL: bool = True    # Mandatory human gate
     MAX_SIMULTANEOUS_RETRIES: int = 3         # Circuit breaker threshold
     
-    # SQLite Database File
-    DATABASE_PATH: str = "revenueguard.db"
+    # SQLite Database File (Uses /tmp on Vercel/serverless environments)
+    DATABASE_PATH: str = os.path.join("/tmp", "revenueguard.db") if os.environ.get("VERCEL") else "revenueguard.db"
 
 settings = Settings()
 
