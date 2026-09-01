@@ -16,6 +16,19 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 
 ---
 
+## 📊 Deterministic Financial Metrics
+
+All metric calculations are derived directly from the transaction database without probabilistic estimation or LLM hallucination:
+
+| Metric Tier | Amount (INR) | Calculation Definition | Strategic Meaning |
+|---|---|---|---|
+| **Merchant GMV Analyzed** | **₹18,40,000** | Total attempted transaction volume (127 transactions) | Total cohort baseline |
+| **Revenue at Risk** | **₹2,37,000** | Failed orders (₹1,96,000) + Pending checkouts (₹41,000) | Total detected leakage pipeline |
+| **Eligible for Recovery** | **₹1,75,000** | Orders meeting safety policy ($\le$ ₹50k, age $< 7$ days) | Verified actionable recovery pipeline |
+| **Expected Revenue Lift** | **₹1,42,000** | Weighted channel recovery probability (81.1%) | **+8.9% Net Top-Line GMV Lift** |
+
+---
+
 ## 🏗️ 5-Layer System Architecture
 
 ```
@@ -74,18 +87,6 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 
 ---
 
-## 📊 Deterministic Financial Metrics
-
-All metric calculations are derived directly from the transaction database without probabilistic estimation or LLM hallucination:
-
-$$\text{Revenue at Risk} = \sum \text{Amount}_{\text{Failed}} + \sum \text{Amount}_{\text{Pending}} = ₹2,37,000$$
-
-$$\text{Eligible Recovery} = \sum_{\text{eligible}} \text{Amount} \quad (\text{where } \text{Amount} \le ₹50,000 \text{ and } \text{Age} \le 7\text{d}) = ₹1,75,000$$
-
-$$\text{Expected Recovery} = \text{Eligible Recovery} \times \text{Weighted Channel Probability} = ₹1,42,000 \quad (+8.9\% \text{ GMV Expansion})$$
-
----
-
 ## 🔑 Core Technical Capabilities
 
 ### 1. Dual-Provider Polymorphism (Live Razorpay Test Mode + Offline Sandbox)
@@ -102,6 +103,10 @@ The AI agent (`RevenueGuardAgent`) operates strictly over observed telemetry and
 - **Unknowns**: Information not present in gateway logs (e.g. issuer internal decline codes).
 - **Confidence**: Grounded confidence rating with explicit justification.
 
+```
+Evidence ──► Known Facts ──► Operational Inference ──► Unknowns ──► Confidence ──► Action & ROI
+```
+
 ### 3. Least-Privilege Controlled Agent Tools
 The AI agent **cannot execute financial transactions directly**. It only has inspection tools (`analyze_metrics`, `inspect_transaction`, `inspect_customer_history`) and a `request_recovery` tool that routes proposals strictly to the Safety Engine.
 
@@ -109,14 +114,16 @@ The AI agent **cannot execute financial transactions directly**. It only has ins
 A hard security perimeter evaluating five deterministic checks before execution:
 1. **Record Integrity**: Transaction ID must exist in local database.
 2. **Amount Match**: Requested amount must exactly match the verified database order amount.
-3. **Ceiling Limit**: Amount must not exceed merchant threshold (≤ ₹50,000).
+3. **Ceiling Limit**: Amount must not exceed merchant threshold ($\le$ ₹50,000).
 4. **Idempotency Hash Lock**: SHA-256 action hash prevents duplicate execution.
 5. **Circuit Breaker**: Halts downstream calls upon consecutive provider timeouts.
 
 ### 5. Cryptographic SHA-256 Hash-Chained Audit Ledger 📜
 Every agent analysis, safety validation, approval decision, and provider API dispatch produces an immutable block:
 
-$$\text{Event Hash}_N = \text{SHA-256}\Big(\text{Timestamp} \parallel \text{Type} \parallel \text{Actor} \parallel \text{Action} \parallel \text{TxID} \parallel \text{Amount} \parallel \text{Metadata} \parallel \text{Event Hash}_{N-1}\Big)$$
+```
+Block N Hash = SHA-256( Timestamp | EventType | Actor | Action | TxID | Amount | Metadata | Block N-1 Hash )
+```
 
 Includes a built-in cryptographic verifier and interactive tamper detection test.
 
@@ -124,6 +131,33 @@ Includes a built-in cryptographic verifier and interactive tamper detection test
 - **Scenario A (API Timeout & Circuit Breaker)**: Downstream timeout $\to$ safe retries $\to$ circuit breaker activation $\to$ Guarantee: *"No duplicate financial action was executed."*
 - **Scenario B (Duplicate Request Defense)**: Idempotency filter intercepts and blocks duplicate action submissions $\to$ Guarantee: *"Duplicate financial action prevented."*
 - **Scenario C (Amount Tampering Attack)**: Intercepts payload modification (e.g. ₹18,500 tampered to ₹25,000) $\to$ Guarantee: *"Security Alert: Amount Mismatch Blocked."*
+
+---
+
+## 🖥️ 5 Core Dashboard Views
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│  RevenueGuard AI        🟢 ENVIRONMENT: DEMO SANDBOX       [Reset Data]    │
+│  [1. Growth Overview] [2. Revenue Leaks] [3. AI Investigation] [4. Approvals] [5. Audit] │
+├────────────────────────────────────────────────────────────────────────────┤
+│  Top-Line Revenue Growth Opportunity • +8.9% GMV Lift                     │
+│  ₹2,37,000 Recoverable GMV Pipeline               [Launch Recovery]        │
+│                                                                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
+│  │ Revenue Risk │  │ Eligible GMV │  │ Revenue Lift │  │ Merchant GMV │    │
+│  │  ₹2,37,000   │  │  ₹1,75,000   │  │  ₹1,42,000   │  │  ₹18,40,000  │    │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
+│                                                                            │
+│  [🔴 12 High-Value Failures] [🟠 31 Abandoned Orders] [🟡 7 Repeat Friction]│
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Growth Overview**: High-impact revenue at risk metrics, recovery conversion tiers, and status distribution charts.
+2. **Revenue Leaks & Opportunities**: Categorized cohort table with severity tags and AI deep-dive triggers.
+3. **Agentic Investigation**: Grounded 4-box analysis (Evidence, Known Facts, Inference, Unknowns) with autonomous recovery proposal.
+4. **Approval & Commerce Dispatch**: Real-time 4-point safety verification checklist with [Approve] and [Reject] human controls.
+5. **Audit & Resilience**: Real-time SHA-256 hash-chain timeline, live chain verifier, and the 3 interactive security simulations.
 
 ---
 
@@ -155,7 +189,21 @@ RAZORPAY_KEY_SECRET=your_test_key_secret
 python -m pytest tests/ -v
 ```
 
-11 unit and integration test suites verify all analytics formulas, safety gates, audit chain hashing, and failure simulations.
+11 unit and integration test suites verify all analytics formulas, safety gates, audit chain hashing, and failure simulations:
+
+```
+tests/test_analytics.py::test_deterministic_metrics PASSED               [  9%]
+tests/test_analytics.py::test_leak_detection_categories PASSED           [ 18%]
+tests/test_audit_chain.py::test_hash_chain_integrity PASSED              [ 27%]
+tests/test_audit_chain.py::test_tamper_detection PASSED                  [ 36%]
+tests/test_safety.py::test_valid_action_safety PASSED                    [ 45%]
+tests/test_safety.py::test_amount_tamper_detection PASSED                [ 54%]
+tests/test_safety.py::test_nonexistent_transaction PASSED                [ 63%]
+tests/test_safety.py::test_over_limit_enforcement PASSED                 [ 72%]
+tests/test_simulations.py::test_scenario_a_timeout PASSED                [ 81%]
+tests/test_simulations.py::test_scenario_b_duplicate PASSED              [ 90%]
+tests/test_simulations.py::test_scenario_c_tampering PASSED              [100%]
+```
 
 ---
 
@@ -205,6 +253,8 @@ revenueguard-ai/
 │   └── test_simulations.py      # Integration tests for Timeout, Idempotency, and Tampering
 ├── docs/
 │   └── architecture.md          # In-depth architectural specification
+├── DEVELOPMENT.md               # Step-by-step engineering log and tooling transparency
+├── LICENSE                      # MIT Open Source License
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Technical documentation & demo guide
 ```

@@ -1,5 +1,6 @@
 # RevenueGuard AI — Architectural Specification
 
+> **Track 01**: AI Growth & Agentic Commerce (Razorpay Hackathon)  
 > **Positioning**: A Permissioned Autonomous Merchant Agent for Revenue Leak Detection and Safe Recovery.
 
 ---
@@ -62,7 +63,55 @@
 
 ---
 
-## 2. Layer 1 — Razorpay & Payment Provider Abstraction
+## 2. End-to-End Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Merchant
+    participant UI as Merchant Dashboard
+    participant API as FastAPI Backend
+    participant Analytics as Deterministic Analytics
+    participant Agent as RevenueGuard AI Agent
+    participant Safety as Safety & Policy Engine
+    participant Provider as Razorpay Payment Provider
+    participant Audit as Cryptographic Audit Ledger
+
+    Merchant->>UI: Opens Dashboard
+    UI->>API: GET /api/overview
+    API->>Analytics: Calculate Metrics (Direct SQLite)
+    Analytics-->>API: Returns Revenue at Risk (₹2.37L), Eligible (₹1.75L), Expected (₹1.42L)
+    API-->>UI: Render Metric Cards & Failure Charts
+
+    Merchant->>UI: Clicks "Investigate with AI" (Leak ID: leak_hv_failures)
+    UI->>API: POST /api/agent/investigate
+    API->>Agent: investigate_leak("leak_hv_failures")
+    Agent->>API: inspect_transaction("pay_hv_01")
+    Agent-->>API: Synthesizes Grounded Telemetry (Evidence, Known Facts, Inference, Unknowns, Confidence)
+    API->>Audit: Log Audit Event (RECOMMENDATION_GENERATED)
+    Audit-->>API: Appended Block N with SHA-256 Hash
+    API-->>UI: Displays 4-Box Grounded AI Reasoning & ROI Proposal
+
+    Merchant->>UI: Clicks "Submit for Merchant Approval"
+    UI->>API: POST /api/approvals/propose
+    API->>Safety: validate_action("pay_hv_01", amount=18500.0)
+    Safety-->>API: Safety Checks Passed (Integrity, Amount Match, Idempotency, Limit)
+    API-->>UI: Action Enqueued in Approval Center
+
+    Merchant->>UI: Clicks "Approve & Execute via Razorpay"
+    UI->>API: POST /api/approvals/{action_id}/decide (decision="APPROVE")
+    API->>Safety: Pre-Execution Safety Re-Check
+    Safety-->>API: Passed
+    API->>Provider: create_recovery_payment_link("pay_hv_01", amount=18500.0)
+    Provider-->>API: Generated Razorpay Smart Link (plink_xxx, https://rzp.io/i/xxx)
+    API->>Audit: Log Audit Event (RESULT_SUCCESS)
+    Audit-->>API: Appended Block N+1 with SHA-256 Hash
+    API-->>UI: Recovery Dispatched Successfully (Updates Timeline & Metrics)
+```
+
+---
+
+## 3. Layer 1 — Razorpay & Payment Provider Abstraction
 
 The system enforces a clean polymorphism pattern via `PaymentProvider`:
 
@@ -81,7 +130,7 @@ class PaymentProvider(ABC):
 
 ---
 
-## 3. Layer 2 — Deterministic Analytics Engine (Zero LLM Hallucinations)
+## 4. Layer 2 — Deterministic Analytics Engine (Zero LLM Hallucinations)
 
 All numbers shown in the dashboard are computed directly from the SQLite transactions database using deterministic arithmetic:
 
@@ -89,7 +138,7 @@ All numbers shown in the dashboard are computed directly from the SQLite transac
 2. **Successful Volume**: $\sum \text{amount}_{\text{success}} = ₹16,03,000.00$
 3. **Revenue at Risk**: $\sum \text{amount}_{\text{failed}} + \sum \text{amount}_{\text{pending}} = ₹2,37,000.00$
 4. **Eligible for Recovery**: Transactions with $\text{amount} \le ₹50,000$ and age $< 7 \text{ days} = ₹1,75,000.00$
-5. **Expected Recovery**: Probability-weighted recovery potential based on historical customer LTV and channel conversion rate $= ₹1,42,000.00$
+5. **Expected Recovery**: Probability-weighted recovery potential based on customer lifetime value and channel conversion rate $= ₹1,42,000.00$
 
 ### Leak Cohorts Identified
 - **High-Value Failed Transactions**: 12 orders totaling ₹82,000.
@@ -98,7 +147,7 @@ All numbers shown in the dashboard are computed directly from the SQLite transac
 
 ---
 
-## 4. Layer 3 — Grounded AI Reasoning Engine
+## 5. Layer 3 — Grounded AI Reasoning Engine
 
 Rather than unstructured prompting, the AI receives structured telemetry and outputs a 7-element grounded analysis:
 
@@ -115,7 +164,7 @@ The agent is restricted to read and propose tools:
 
 ---
 
-## 5. Layer 4 — Deterministic Safety Engine 🛡️
+## 6. Layer 4 — Deterministic Safety Engine 🛡️
 
 The Safety Engine serves as an impenetrable security boundary between AI recommendations and payment APIs:
 
@@ -137,18 +186,20 @@ flowchart TD
 
 ---
 
-## 6. Layer 5 — Cryptographic SHA-256 Hash Chain Audit Ledger 📜
+## 7. Layer 5 — Cryptographic SHA-256 Hash Chain Audit Ledger 📜
 
 Every system action generates an immutable block linked to the previous block hash:
 
-$$\text{Event Hash}_N = \text{SHA-256}\Big(\text{Timestamp} \parallel \text{Type} \parallel \text{Actor} \parallel \text{Action} \parallel \text{TxID} \parallel \text{Amount} \parallel \text{Metadata} \parallel \text{Event Hash}_{N-1}\Big)$$
+```
+Block N Hash = SHA-256( Timestamp | EventType | Actor | Action | TxID | Amount | Metadata | Block N-1 Hash )
+```
 
 - **Live Verification**: Cryptographic validator traverses the ledger from Genesis block to latest block to verify unbroken chain integrity.
 - **Tamper Simulation**: Demonstrates instantaneous detection if any database row is altered after the fact.
 
 ---
 
-## 7. Resilience & Security Simulations
+## 8. Resilience & Security Simulations
 
 1. **Scenario A — API Timeout & Circuit Breaker**:
    - Downstream network timeout $\to$ 3 retry attempts fail $\to$ circuit breaker trips $\to$ action marked `FAILED_PENDING_RETRY` $\to$ **Guarantee**: *"No duplicate financial action was executed."*
