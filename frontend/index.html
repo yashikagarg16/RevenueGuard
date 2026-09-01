@@ -192,22 +192,22 @@
                 <div class="glass-card p-4 flex items-center space-x-3 border-rose-900/30">
                     <span class="w-3 h-3 rounded-full bg-rose-500"></span>
                     <div>
-                        <div class="text-sm font-bold text-white"><span id="badge-hv-count">12</span> High-Value Failures</div>
-                        <div class="text-xs text-gray-400">₹82,000 recoverable high-ticket volume</div>
+                        <div class="text-sm font-bold text-white"><span id="badge-hv-count">14</span> High-Value Failures</div>
+                        <div class="text-xs text-gray-400" id="badge-hv-desc">₹1,12,000 recoverable high-ticket volume</div>
                     </div>
                 </div>
                 <div class="glass-card p-4 flex items-center space-x-3 border-amber-900/30">
                     <span class="w-3 h-3 rounded-full bg-amber-500"></span>
                     <div>
                         <div class="text-sm font-bold text-white"><span id="badge-pend-count">31</span> Abandoned Checkouts</div>
-                        <div class="text-xs text-gray-400">₹41,000 uncompleted buyer intent</div>
+                        <div class="text-xs text-gray-400" id="badge-pend-desc">₹64,000 uncompleted buyer checkout sessions</div>
                     </div>
                 </div>
                 <div class="glass-card p-4 flex items-center space-x-3 border-indigo-900/30">
                     <span class="w-3 h-3 rounded-full bg-indigo-400"></span>
                     <div>
-                        <div class="text-sm font-bold text-white"><span id="badge-rep-count">7</span> High-LTV Repeat Customer Friction</div>
-                        <div class="text-xs text-gray-400">₹29,000 loyal customer retention salvage</div>
+                        <div class="text-sm font-bold text-white"><span id="badge-rep-count">7</span> Repeat Failed Customers</div>
+                        <div class="text-xs text-gray-400" id="badge-rep-desc">₹61,000 loyal customer retention salvage</div>
                     </div>
                 </div>
             </div>
@@ -267,9 +267,9 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     <select id="investigate-leak-select" onchange="investigateSpecificLeak(this.value)" class="bg-gray-800 border border-gray-700 text-xs text-gray-200 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="leak_hv_failures">High-Value Failed Transactions (₹82k)</option>
-                        <option value="leak_abandoned_orders">Abandoned & Pending Orders (₹41k)</option>
-                        <option value="leak_repeat_failures">Repeat Customer Failures (₹29k)</option>
+                        <option value="leak_hv_failures">High-Value Failed Transactions (₹1.12L)</option>
+                        <option value="leak_abandoned_orders">Abandoned & Pending Orders (₹64k)</option>
+                        <option value="leak_repeat_failures">Repeat Customer Failures (₹61k)</option>
                     </select>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 # RevenueGuard AI 🛡️
 ### Track 01: AI Growth & Agentic Commerce — Razorpay Hackathon
 
+> **Live Deployment**: **[https://revenue-guard-rho.vercel.app](https://revenue-guard-rho.vercel.app)**  
 > **System Overview**: An autonomous, permission-gated merchant agent that monitors transaction streams, detects payment and checkout leakage using deterministic metrics, diagnoses root causes through grounded telemetry reasoning, and executes approved recovery actions via **Razorpay Test Mode APIs** under cryptographic auditability and deterministic safety constraints.
 
 ---
@@ -16,7 +17,7 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 
 ---
 
-## 🖥️ Visual Dashboard Walkthrough
+## 🖥️ Visual Dashboard Walkthrough (Live UI Screenshots)
 
 ### 1. Growth Overview Dashboard
 > *Real-time visibility into the ₹2,37,000 Recoverable GMV Pipeline, three financial tiers, and root cause error distribution.*
@@ -26,7 +27,7 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 ---
 
 ### 2. Revenue Leaks & Opportunity Detection
-> *Deterministic anomaly grouping across High-Value Failures (₹82k), Abandoned Orders (₹41k), and Repeat Customer Friction (₹29k).*
+> *Deterministic anomaly grouping across High-Value Failures (₹1,12,000), Abandoned Orders (₹64,000), and Repeat Customer Friction (₹61,000) — summing to exactly 100% of Revenue at Risk.*
 
 ![Revenue Leaks](docs/screenshots/02_revenue_leaks.png)
 
@@ -53,16 +54,25 @@ In modern e-commerce, merchants lose **15% to 20% of GMV** not because customers
 
 ---
 
-## 📊 Deterministic Financial Metrics
+## 📊 100% Reconcilable Deterministic Financial Metrics
 
-All metric calculations are derived directly from the transaction database without probabilistic estimation or LLM hallucination:
+All metric calculations are derived directly from the SQLite transaction database with **zero LLM hallucination and 100% mathematical reconciliation**:
 
 | Metric Tier | Amount (INR) | Calculation Definition | Strategic Meaning |
 |---|---|---|---|
 | **Merchant GMV Analyzed** | **₹18,40,000** | Total attempted transaction volume (127 transactions) | Total cohort baseline |
-| **Revenue at Risk** | **₹2,37,000** | Failed orders (₹1,96,000) + Pending checkouts (₹41,000) | Total detected leakage pipeline |
+| **Successful GMV** | **₹16,03,000** | Completed captured volume (70 transactions) | Captured baseline |
+| **Revenue at Risk** | **₹2,37,000** | Failed orders (₹1,73,000) + Pending checkouts (₹64,000) | Total detected leakage pipeline |
 | **Eligible for Recovery** | **₹1,75,000** | Orders meeting safety policy ($\le$ ₹50k, age $< 7$ days) | Verified actionable recovery pipeline |
 | **Expected Revenue Lift** | **₹1,42,000** | Weighted channel recovery probability (81.1%) | **+8.9% Net Top-Line GMV Lift** |
+
+### 🔍 100% Reconciled Leak Breakdown
+
+$$\text{High-Value Failures (₹1,12,000)} + \text{Abandoned Orders (₹64,000)} + \text{Repeat Friction (₹61,000)} = \mathbf{₹2,37,000.0} \quad (100.0\%)$$
+
+1. **High-Value Payment Failures**: 14 high-ticket failed orders totaling **₹1,12,000.0** (Expected Recovery: ₹67,200.0).
+2. **Abandoned & Pending Orders**: 31 uncompleted checkouts totaling **₹64,000.0** (Expected Recovery: ₹38,400.0).
+3. **Repeat Customer Friction**: 12 failed orders across 7 repeat loyal customers totaling **₹61,000.0** (Expected Recovery: ₹36,400.0).
 
 ---
 
@@ -140,6 +150,10 @@ The AI agent (`RevenueGuardAgent`) operates strictly over observed telemetry and
 - **Unknowns**: Information not present in gateway logs (e.g. issuer internal decline codes).
 - **Confidence**: Grounded confidence rating with explicit justification.
 
+```
+Evidence ──► Known Facts ──► Operational Inference ──► Unknowns ──► Confidence ──► Action & ROI
+```
+
 ### 3. Least-Privilege Controlled Agent Tools
 The AI agent **cannot execute financial transactions directly**. It only has inspection tools (`analyze_metrics`, `inspect_transaction`, `inspect_customer_history`) and a `request_recovery` tool that routes proposals strictly to the Safety Engine.
 
@@ -178,7 +192,7 @@ python -m pip install -r requirements.txt
 ```powershell
 python -m uvicorn backend.main:app --reload --port 8000
 ```
-Open **[http://localhost:8000](http://localhost:8000)** in your browser.
+Open **[http://localhost:8000](http://localhost:8000)** in your browser or visit the live instance at **[https://revenue-guard-rho.vercel.app](https://revenue-guard-rho.vercel.app)**.
 
 ### 3. (Optional) Live Razorpay Test Mode Setup
 Set your credentials in a `.env` file:
@@ -229,6 +243,8 @@ tests/test_simulations.py::test_scenario_c_tampering PASSED              [100%]
 
 ```
 revenueguard-ai/
+├── api/
+│   └── index.py                 # Vercel serverless entrypoint
 ├── backend/
 │   ├── main.py                  # FastAPI server & route orchestration
 │   ├── config.py                # Configuration & dual-mode environment settings
@@ -262,6 +278,7 @@ revenueguard-ai/
 │   └── screenshots/             # High-resolution UI screenshots of all 5 views
 ├── DEVELOPMENT.md               # Step-by-step engineering log and tooling transparency
 ├── LICENSE                      # MIT Open Source License
+├── vercel.json                  # Vercel serverless deployment config
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Technical documentation & demo guide
 ```
